@@ -48,6 +48,8 @@ function main(params) {
       // in case of errors during the call resolve with an error message according to the pattern
       // found in the catch clause below
  
+	  console.log(config.apikey)
+	  cosole.log(params)
       const languageTranslator = new LanguageTranslatorV3({
         version: config.version,
         authenticator: new IamAuthenticator({
