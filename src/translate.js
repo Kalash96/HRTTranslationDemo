@@ -1,6 +1,11 @@
 const LanguageTranslatorV3 = require('ibm-watson/language-translator/v3');
 const { IamAuthenticator } = require('ibm-watson/auth');
 
+const config = {
+  apikey: "0fYiBsUedAMZjAjOxzWIUOQc8KhcYJlFPAmYnNPrOU-u",
+  version: "2018-05-01",
+  url: "https://gateway-fra.watsonplatform.net/language-translator/api"
+}
 
 /**
  * Helper 
@@ -49,16 +54,41 @@ function main(params) {
       // found in the catch clause below
 
       // pick the language with the highest confidence, and send it back
-      resolve({
-        statusCode: 200,
-        body: {
-          translations: "<translated text>",
-          words: 1,
-          characters: 11,
-        },
-        headers: { 'Content-Type': 'application/json' }
+
+      const languageTranslator = new LanguageTranslatorV3({
+        version: config.version,
+        authenticator: new IamAuthenticator({
+          apikey: config.apikey,
+        }),
+        url: config.url,
+        disableSslVerification: true,
       });
-         
+
+      const translateParams = {
+        text: params.text,
+        source: params.source,
+        target: params.target
+      }
+
+      languageTranslator.translate(translateParams)
+      .then(translationResult  => {
+        console.log(JSON.stringify(translationResult , null, 2));
+
+        resolve({
+          statusCode: 200,
+          body: {
+            translations: translationResult,
+            words: translationResult.word_count,
+            characters: translationResult.character_count,
+          },
+          headers: { 'Content-Type': 'application/json' }
+        });
+      })
+      .catch(err => {
+        console.log('error:', err);
+        reject(err);
+      });
+
     } catch (err) {
       console.error('Error while initializing the AI service', err);
       resolve(getTheErrorResponse('Error while communicating with the language service', defaultLanguage));
