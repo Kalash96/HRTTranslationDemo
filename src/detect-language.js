@@ -32,6 +32,8 @@ function getTheErrorResponse(errorMessage, defaultLanguage) {
   *
   */
 function main(params) {
+  console.log("Params detect: ");
+  console.log(params);
 
   /*
    * The default language to choose in case of an error
@@ -67,14 +69,12 @@ function main(params) {
 
       languageTranslator.identify(identifyParams)
       .then(identifiedLanguages => {
-        console.log(JSON.stringify(identifiedLanguages, null, 2));
-
         resolve({
           statusCode: 200,
           body: {
             text: params.text, 
-            language: identifiedLanguages,
-            confidence: identifiedLanguages.confidence,
+            language: identifiedLanguages.result.languages[0].language,
+            confidence: identifiedLanguages.result.languages[0].confidence,
           },
           headers: { 'Content-Type': 'application/json' }
         });

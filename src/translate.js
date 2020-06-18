@@ -32,13 +32,12 @@ function getTheErrorResponse(errorMessage, defaultLanguage) {
   *
   */
 function main(params) {
-
   /*
    * The default language to choose in case of an error
    */
   const defaultLanguage = 'en';
 
-  return new Promise(function (resolve, reject) {
+  return new Promise(async function (resolve, reject) {
 
     try {
 
@@ -54,7 +53,6 @@ function main(params) {
       // found in the catch clause below
 
       // pick the language with the highest confidence, and send it back
-
       const languageTranslator = new LanguageTranslatorV3({
         version: config.version,
         authenticator: new IamAuthenticator({
@@ -65,15 +63,13 @@ function main(params) {
       });
 
       const translateParams = {
-        text: params.text,
-        source: params.source,
-        target: params.target
+        text: params.body.text,
+        source: params.body.language,
+        target: defaultLanguage
       }
 
       languageTranslator.translate(translateParams)
       .then(translationResult  => {
-        console.log(JSON.stringify(translationResult , null, 2));
-
         resolve({
           statusCode: 200,
           body: {
